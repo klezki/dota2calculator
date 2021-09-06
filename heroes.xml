@@ -1,0 +1,53 @@
+<heroes>
+    <hero>
+        <name>Anti-Mage</name>
+
+        <attribute>agility</attribute>
+
+        <strength>23</strength>
+        <agility>24</agility>
+        <intellegence>12</intellegence>
+
+        <strengthGrowth>1.6</strengthGrowth>
+        <agilityGrowth>2.8</agilityGrowth>
+        <intellegenceGrowth>1.8</intellegenceGrowth>
+
+        <baseDamage>29-33</baseDamage>
+        <redPhysicalDamage>32</redPhysicalDamage>
+
+        <bat>1.4</bat>
+    </hero>
+    <hero>
+        <name>Axe</name>
+
+        <attribute>strength</attribute>
+
+        <strength>25</strength>
+        <agility>20</agility>
+        <intellegence>18</intellegence>
+
+        <strengthGrowth>3.4</strengthGrowth>
+        <agilityGrowth>2.2</agilityGrowth>
+        <intellegenceGrowth>1.6</intellegenceGrowth>
+
+        <baseDamage>27-31</baseDamage>
+    </hero>
+    <hero>
+        <name>Wraith King</name>
+
+        <attribute>strength</attribute>
+
+        <strength>22</strength>
+        <agility>18</agility>
+        <intellegence>18</intellegence>
+        <strengthGrowth>3</strengthGrowth>
+        <agilityGrowth>1.7</agilityGrowth>
+        <intellegenceGrowth>1.6</intellegenceGrowth>
+
+        <baseDamage>38-40</baseDamage>
+        <crit>2.6</crit>
+        <traitCdCrit>
+            <cd>4</cd>
+        </traitCdCrit>
+    </hero>
+</heroes>

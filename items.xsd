@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <xsd:element name="items">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="item" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="name" type="xsd:string"/>
+                            <xsd:element name="cost" type="xsd:float"/>
+                            <xsd:element name="strength" type="xsd:float" minOccurs = "0"/>
+                            <xsd:element name="agility" type="xsd:float" minOccurs = "0"/>
+                            <xsd:element name="intellegence" type="xsd:float" minOccurs = "0"/>
+                            <xsd:element name="greenDamage" type="xsd:float" minOccurs = "0"/>
+                            <xsd:element name="redPhysicalDamage" type="xsd:float" minOccurs = "0"/>
+                            <xsd:element name="redMagickDamage" type="xsd:float" minOccurs = "0"/>
+                            <xsd:element name="as" type="xsd:float" minOccurs = "0"/>
+                            <xsd:element name="crit" type="xsd:float" minOccurs = "0"/>
+                            <xsd:element name="critChance" type="xsd:float" minOccurs = "0"/>
+
+                            <xsd:element name="traitRadiance" minOccurs = "0">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="dps" type="xsd:float"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                            
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+         </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

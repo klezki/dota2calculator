@@ -1,0 +1,8 @@
+.vs/
+debug/
+release/
+x64/
+QtApplication1.sln
+QtApplication1.vcxproj
+QtApplication1.vcxproj.filters
+QtApplication1.vcxproj.user

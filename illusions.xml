@@ -1,0 +1,35 @@
+<heroes>
+    <hero>
+        <name>Anti-Mage</name>
+
+        <attribute>agility</attribute>
+
+        <strength>23</strength>
+        <agility>24</agility>
+        <intellegence>12</intellegence>
+
+        <strengthGrowth>1.6</strengthGrowth>
+        <agilityGrowth>2.8</agilityGrowth>
+        <intellegenceGrowth>1.8</intellegenceGrowth>
+
+        <damage>29-33</damage>
+        <redDamage>32</redDamage>
+
+        <bat>1.4</bat>
+    </hero>
+    <hero>
+        <name>Axe</name>
+
+        <attribute>strength</attribute>
+
+        <strength>25</strength>
+        <agility>20</agility>
+        <intellegence>18</intellegence>
+
+        <strengthGrowth>3.4</strengthGrowth>
+        <agilityGrowth>2.2</agilityGrowth>
+        <intellegenceGrowth>1.6</intellegenceGrowth>
+
+        <damage>27-31</damage>
+    </hero>
+</heroes>

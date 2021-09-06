@@ -1,0 +1,23 @@
+<items>
+    <item>
+        <name>Dragon Lance</name>
+        <cost>1900</cost>
+        <strength>12</strength>
+        <agility>16</agility>
+    </item>
+    <item>
+        <name>Maelstrom</name>
+        <cost>2700</cost>
+        <greenDamage>24</greenDamage>
+        <redMagickDamage>42</redMagickDamage>
+    </item>
+    <item>
+        <name>Radiance</name>
+        <cost>5150</cost>
+        <greenDamage>60</greenDamage>
+        <traitRadiance>
+            <dps>60</dps>
+        </traitRadiance>
+    </item>
+
+</items>
