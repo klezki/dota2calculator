@@ -4,7 +4,7 @@
 
 namespace
 {
-	const std::unordered_map<const char*, Skill::ids> heroesDispatchTable = {
+	const std::unordered_map<std::string, Skill::ids> heroesDispatchTable = {
 		{ "strength",  Skill::ids::strength},
 		{ "agility",  Skill::ids::agility},
 		{ "intellegence",  Skill::ids::intellegence},
@@ -16,12 +16,12 @@ namespace
 		{ "critChance",  Skill::ids::critChance},
 	};
 
-	const std::unordered_map<const char*, Trait::traitIds> heroesTraitsDispatchTable = {
+	const std::unordered_map<std::string, Trait::traitIds> heroesTraitsDispatchTable = {
 		{ "cdCrit",  Trait::traitIds::cdCrit},
 		{ "crit",  Trait::traitIds::crit},
 	};
 
-	const std::unordered_map<const char*, DotaItem::ids> itemsDispatchTable = {
+	const std::unordered_map<std::string, DotaItem::ids> itemsDispatchTable = {
 		{ "strength",  DotaItem::ids::strength},
 		{ "agility",  DotaItem::ids::agility},
 		{ "intellegence",  DotaItem::ids::intellegence},
@@ -143,10 +143,7 @@ void DotaCalculator::initHeroData()
 		{
 			QDomElement heroBonusStatElement = heroSkillElement.firstChildElement();
 
-			auto asd = heroSkillElement.tagName().toLocal8Bit().constData();
-			auto debug = heroBonusStatElement.tagName().toStdString();
-
-			Skill::ids bonusStat = heroesDispatchTable.at(heroBonusStatElement.tagName().toLocal8Bit().constData());
+			Skill::ids bonusStat = heroesDispatchTable.at(heroBonusStatElement.tagName().toStdString());
 
 			Skill skill{};
 			skill.id = bonusStat;
@@ -158,7 +155,7 @@ void DotaCalculator::initHeroData()
 				bonusStatElement = bonusStatElement.nextSiblingElement();
 			}
 
-			if (!bonusStatElement.isNull() && heroBonusStatElement.tagName() == "talent") {
+			if (!bonusStatElement.isNull() && bonusStatElement.tagName() == "talent") {
 				skill.talent = bonusStatElement.text().toFloat();
 				skill.flag = talentFlag::off;
 			}
@@ -175,7 +172,7 @@ void DotaCalculator::initHeroData()
 			QDomElement traitElement = heroTraitElement.firstChildElement();
 
 
-			Trait::traitIds id = heroesTraitsDispatchTable.at(traitElement.tagName().toLocal8Bit().constData());
+			Trait::traitIds id = heroesTraitsDispatchTable.at(traitElement.tagName().toStdString());
 
 			switch (id)
 			{
@@ -241,7 +238,7 @@ void DotaCalculator::initItemData()
 		{
 			try
 			{
-				DotaItem::ids bonusStat = itemsDispatchTable.at(itemBonusStatElement.tagName().toLocal8Bit().data());
+				DotaItem::ids bonusStat = itemsDispatchTable.at(itemBonusStatElement.tagName().toStdString());
 
 				switch (bonusStat)
 				{
