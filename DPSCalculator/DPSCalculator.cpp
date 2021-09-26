@@ -4,18 +4,18 @@
 
 inline constexpr bool operator<(const CritData& a, const CritData& b) { return a.mult < b.mult; };
 
-traitCallback DPSCalculator::getTraitCallback(const std::string& traitName)
-{
-	auto ptrait = _hero.traits.find(traitName);
-	if (ptrait != _hero.traits.end())
-	{
-		return ptrait->second;
-	}
-	else
-	{
-		return {};
-	}
-}
+//traitCallback DPSCalculator::getTraitCallback(const std::string& traitName)
+//{
+//	auto ptrait = _hero.traits.find(traitName);
+//	if (ptrait != _hero.traits.end())
+//	{
+//		return ptrait->second;
+//	}
+//	else
+//	{
+//		return {};
+//	}
+//}
 
 
 void DPSCalculator::load(const DotaHero& hero, unsigned int level, const DotaItem (&items)[MAX_ITEMS])
@@ -54,11 +54,11 @@ float DPSCalculator::calculate()
 	setCrit();
 
 	float dps = 0.0f;
-	traitCallback dpsTrait = getTraitCallback("traitRadiance");
-	if (dpsTrait)
-	{
-		dps = dpsTrait(_hero);
-	}
+	//traitCallback dpsTrait = getTraitCallback("traitRadiance");
+	//if (dpsTrait)
+	//{
+	//	dps = dpsTrait(_hero);
+	//}
 	
 	//preprocess()
 
@@ -67,15 +67,15 @@ float DPSCalculator::calculate()
 
 void DPSCalculator::setCrit()
 {
-	traitCallback CdCrit = getTraitCallback("traitCdCrit");
-	if (CdCrit)
-	{
-		critData[0] = { _hero.crit - 1.0f, CdCrit(_hero) };
-	}
-	else
-	{
-		critData[0] = { _hero.crit - 1.0f, _hero.critChance };
-	}
+	//traitCallback CdCrit = getTraitCallback("traitCdCrit");
+	//if (CdCrit)
+	//{
+	//	critData[0] = { _hero.crit - 1.0f, CdCrit(_hero) };
+	//}
+	//else
+	//{
+	//	critData[0] = { _hero.crit - 1.0f, _hero.critChance };
+	//}
 
 	//sort in reverse order
 	std::sort(std::rbegin(critData), std::rend(critData));

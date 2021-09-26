@@ -46,5 +46,5 @@ void OtherDialog::initMainLayout()
 
 void OtherDialog::onDialogOpen()
 {
-	exec();
+	open();
 }

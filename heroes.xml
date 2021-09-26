@@ -1,21 +1,31 @@
 <heroes>
     <hero>
-        <name>Anti-Mage</name>
+        <name>Bloodseeker</name>
 
         <attribute>agility</attribute>
 
-        <strength>23</strength>
-        <agility>24</agility>
-        <intellegence>12</intellegence>
+        <strength>24</strength>
+        <agility>22</agility>
+        <intellegence>17</intellegence>
 
-        <strengthGrowth>1.6</strengthGrowth>
-        <agilityGrowth>2.8</agilityGrowth>
-        <intellegenceGrowth>1.8</intellegenceGrowth>
+        <strengthGrowth>2.7</strengthGrowth>
+        <agilityGrowth>3.1</agilityGrowth>
+        <intellegenceGrowth>2</intellegenceGrowth>
 
-        <baseDamage>29-33</baseDamage>
-        <redPhysicalDamage>32</redPhysicalDamage>
+        <baseDamage>35-41</baseDamage>
+        <bat>1.7</bat>
+        <baseAS>100</baseAS>
 
-        <bat>1.4</bat>
+        <skill>
+            <as>
+                <lvl1>60</lvl1>
+                <lvl2>90</lvl2>
+                <lvl3>120</lvl3>
+                <lvl4>150</lvl4>
+                <talent>30</talent>
+            </as>
+        </skill>
+
     </hero>
     <hero>
         <name>Axe</name>
@@ -31,23 +41,9 @@
         <intellegenceGrowth>1.6</intellegenceGrowth>
 
         <baseDamage>27-31</baseDamage>
+        <bat>1.7</bat>
+        <baseAS>100</baseAS>
+
     </hero>
-    <hero>
-        <name>Wraith King</name>
 
-        <attribute>strength</attribute>
-
-        <strength>22</strength>
-        <agility>18</agility>
-        <intellegence>18</intellegence>
-        <strengthGrowth>3</strengthGrowth>
-        <agilityGrowth>1.7</agilityGrowth>
-        <intellegenceGrowth>1.6</intellegenceGrowth>
-
-        <baseDamage>38-40</baseDamage>
-        <crit>2.6</crit>
-        <traitCdCrit>
-            <cd>4</cd>
-        </traitCdCrit>
-    </hero>
 </heroes>

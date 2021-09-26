@@ -8,10 +8,12 @@
 #include <QLayout>
 #include <QPushButton>
 #include "DotaCalculator/OtherDialog.h"
+#include "DotaCalculator/HeroDialog.h"
 #include "FileManager/FileManager.h"
 #include "DotaHero/DotaHero.h"
 #include "DotaItem/DotaItem.h"
 #include "DPSCalculator/DPSCalculator.h"
+#include <Traits/Traits.h>
 
 
 
@@ -25,6 +27,7 @@ public:
 
 public slots:
 	void onCalculateClick();
+	void onHeroDialogOpen();
 
 private:
 	const char* HEROES_XML_PATH = "heroes.xml";
@@ -36,6 +39,7 @@ private:
 	void initHeroData();
 	void initItemData();
 	void initHeroSelection();
+	void initHeroDialog();
 	void initLevelSelection();
 	void initItemsSelection();
 	void initButtons();
@@ -45,8 +49,12 @@ private:
 
 	QVBoxLayout* mainLayout;
 	
+	QHBoxLayout* selectHeroLayout;
 	QLabel* selectHeroLabel;
+	QPushButton* selectHeroButton;
 	QComboBox* selectHeroComboBox;
+
+	HeroDialog* heroDialog;
 
 	QLabel* selectLevelLabel;
 	QSpinBox* selectLevelSpinBox;

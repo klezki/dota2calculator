@@ -5,6 +5,22 @@
 
 struct DotaItem
 {
+	enum class ids
+	{
+		strength,
+		agility,
+		intellegence,
+		greenDamage,
+		redPhysicalDamage,
+		redMagickDamage,
+		as,
+		crit,
+		critChance,
+
+		traitRadiance,
+	};
+
+
 	float cost = 0;
 	float strength = 0;
 	float agility = 0;
@@ -18,5 +34,5 @@ struct DotaItem
 
 	std::string name = "";
 
-	std::unordered_map<std::string, traitCallback> traits;
+	std::unordered_map<std::string, std::shared_ptr<Skill>> traits;
 };

@@ -2,7 +2,40 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include <functional>
+#include <utility>
+#include <memory>
+
+#define SKILL_NUM 4
+
+enum class talentFlag
+{
+	empty,
+	on,
+	off
+};
+
+struct Skill
+{
+	enum class ids
+	{
+		strength,
+		agility,
+		intellegence,
+		greenDamage,
+		redPhysicalDamage,
+		redMagickDamage,
+		as,
+		crit,
+		critChance,
+	};
+
+	talentFlag flag = talentFlag::empty;
+	ids id;
+	float val[SKILL_NUM];
+	float talent;
+};
 
 enum class Attribute
 {
@@ -10,10 +43,6 @@ enum class Attribute
 	Agility,
 	Intellegence
 };
-
-
-struct DotaHero;
-using traitCallback = std::function<float(DotaHero const&)>;
 
 struct DotaHero
 {
@@ -41,7 +70,7 @@ struct DotaHero
 
 	std::string name = "";
 
-	constexpr float whiteDamage() const
+	float whiteDamage() const
 	{
 		switch (attribute)
 		{
@@ -56,20 +85,21 @@ struct DotaHero
 		}
 	}
 
-	constexpr float physicalDamage() const
+	float physicalDamage() const
 	{
 		return (1.0f + crit/*Multiplier*/) * (whiteDamage() + greenDamage) + redPhysicalDamage;
 	}
 
-	constexpr float magickDamage() const
+	float magickDamage() const
 	{
 		return redMagickDamage;
 	}
 
-	constexpr float aps() const
+	float aps() const
 	{
 		return (100.0f + agility + as) * 0.01f / bat;
 	}
 
-	std::unordered_map<std::string, traitCallback> traits;
+	std::vector<Skill> skills;
+	std::unordered_map<std::string, std::shared_ptr<Skill>> traits;
 };

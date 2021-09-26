@@ -1,62 +1,38 @@
 #include <DotaCalculator/DotaCalculator.h>
-#include <Traits/Traits.h>
 
 
 
 namespace
 {
-	enum class heroBonusStats
-	{
-		greenDamage,
-		redPhysicalDamage,
-		redMagickDamage,
-		bat,
-		as,
-		crit,
-		critChance,
-
-		traitCdCrit,
+	const std::unordered_map<const char*, Skill::ids> heroesDispatchTable = {
+		{ "strength",  Skill::ids::strength},
+		{ "agility",  Skill::ids::agility},
+		{ "intellegence",  Skill::ids::intellegence},
+		{ "greenDamage",  Skill::ids::greenDamage},
+		{ "redPhysicalDamage",  Skill::ids::redPhysicalDamage},
+		{ "redMagickDamage",  Skill::ids::redMagickDamage},
+		{ "as",  Skill::ids::as},
+		{ "crit",  Skill::ids::crit},
+		{ "critChance",  Skill::ids::critChance},
 	};
 
-	enum class itemBonusStats
-	{
-		strength,
-		agility,
-		intellegence,
-		greenDamage,
-		redPhysicalDamage,
-		redMagickDamage,
-		as,
-		crit,
-		critChance,
-
-		traitRadiance,
+	const std::unordered_map<const char*, Trait::traitIds> heroesTraitsDispatchTable = {
+		{ "cdCrit",  Trait::traitIds::cdCrit},
+		{ "crit",  Trait::traitIds::crit},
 	};
 
-	const std::unordered_map<std::string, heroBonusStats> heroesDispatchTable = {
-		{ "greenDamage",  heroBonusStats::greenDamage},
-		{ "redPhysicalDamage",  heroBonusStats::redPhysicalDamage},
-		{ "redMagickDamage",  heroBonusStats::redMagickDamage},
-		{ "bat",  heroBonusStats::bat},
-		{ "as",  heroBonusStats::as},
-		{ "crit",  heroBonusStats::crit},
-		{ "critChance",  heroBonusStats::critChance},
+	const std::unordered_map<const char*, DotaItem::ids> itemsDispatchTable = {
+		{ "strength",  DotaItem::ids::strength},
+		{ "agility",  DotaItem::ids::agility},
+		{ "intellegence",  DotaItem::ids::intellegence},
+		{ "greenDamage",  DotaItem::ids::greenDamage},
+		{ "redPhysicalDamage",  DotaItem::ids::redPhysicalDamage},
+		{ "redMagickDamage",  DotaItem::ids::redMagickDamage},
+		{ "as",  DotaItem::ids::as},
+		{ "crit",  DotaItem::ids::crit},
+		{ "critChance",  DotaItem::ids::critChance},
 
-		{ "traitCdCrit",  heroBonusStats::traitCdCrit},
-	};
-
-	const std::unordered_map<std::string, itemBonusStats> itemsDispatchTable = {
-		{ "strength",  itemBonusStats::strength},
-		{ "agility",  itemBonusStats::agility},
-		{ "intellegence",  itemBonusStats::intellegence},
-		{ "greenDamage",  itemBonusStats::greenDamage},
-		{ "redPhysicalDamage",  itemBonusStats::redPhysicalDamage},
-		{ "redMagickDamage",  itemBonusStats::redMagickDamage},
-		{ "as",  itemBonusStats::as},
-		{ "crit",  itemBonusStats::crit},
-		{ "critChance",  itemBonusStats::critChance},
-
-		{ "traitRadiance",  itemBonusStats::traitRadiance},
+		{ "traitRadiance",  DotaItem::ids::traitRadiance},
 	};
 
 	float parseDamageRange(const QString& damageRange)
@@ -94,6 +70,7 @@ DotaCalculator::DotaCalculator()
 	initItemData();
 
 	initHeroSelection();
+	initHeroDialog();
 	initLevelSelection();
 	initItemsSelection();
 	initDPSResult();
@@ -118,10 +95,10 @@ void DotaCalculator::initHeroData()
 		QDomElement heroStatElement = heroes.at(i).firstChildElement();
 		DotaHero hero;
 
-		hero.name = heroStatElement.text().toLocal8Bit().constData();
+		hero.name = heroStatElement.text().toStdString();
 		heroStatElement = heroStatElement.nextSiblingElement();
 
-		QString attribute = heroStatElement.text().toLocal8Bit().constData();
+		QString attribute = heroStatElement.text();
 		if (attribute == "strength")
 			hero.attribute = Attribute::Strength;
 		if (attribute == "agility")
@@ -152,57 +129,89 @@ void DotaCalculator::initHeroData()
 		hero.baseDamage = parseDamageRange(damageRange);
 		heroStatElement = heroStatElement.nextSiblingElement();
 
+		hero.bat = heroStatElement.text().toFloat();
+		heroStatElement = heroStatElement.nextSiblingElement();
 
-		for (QDomElement heroBonusStatElement = heroStatElement; !heroBonusStatElement.isNull(); heroBonusStatElement = heroBonusStatElement.nextSiblingElement())
+		hero.as = heroStatElement.text().toFloat();
+		heroStatElement = heroStatElement.nextSiblingElement();
+
+		QDomElement heroSkillElement = heroStatElement;
+
+		for ( ;
+			!heroSkillElement.isNull() && heroSkillElement.tagName() != "trait";
+			heroSkillElement = heroSkillElement.nextSiblingElement() )
 		{
-			try
-			{
-				heroBonusStats bonusStat = heroesDispatchTable.at(heroBonusStatElement.tagName().toLocal8Bit().data());
+			QDomElement heroBonusStatElement = heroSkillElement.firstChildElement();
 
-				switch (bonusStat)
-				{
-				case heroBonusStats::greenDamage:
-					hero.greenDamage = heroBonusStatElement.text().toFloat();
-					break;
-				case heroBonusStats::redPhysicalDamage:
-					hero.redPhysicalDamage = heroBonusStatElement.text().toFloat();
-					break;
-				case heroBonusStats::redMagickDamage:
-					hero.redMagickDamage = heroBonusStatElement.text().toFloat();
-					break;
-				case heroBonusStats::bat:
-					hero.bat = heroBonusStatElement.text().toFloat();
-					break;
-				case heroBonusStats::as:
-					hero.as = heroBonusStatElement.text().toFloat();
-					break;
-				case heroBonusStats::crit:
-					hero.crit = heroBonusStatElement.text().toFloat();
-					break;
-				case heroBonusStats::critChance:
-					hero.critChance = heroBonusStatElement.text().toFloat();
-					break;
+			auto asd = heroSkillElement.tagName().toLocal8Bit().constData();
+			auto debug = heroBonusStatElement.tagName().toStdString();
 
+			Skill::ids bonusStat = heroesDispatchTable.at(heroBonusStatElement.tagName().toLocal8Bit().constData());
 
-				case heroBonusStats::traitCdCrit:
-				{
-					QDomElement cdElement = heroBonusStatElement.firstChildElement();
-					float cd = cdElement.text().toFloat();
-					hero.traits["traitCdCrit"] = CdCrit{ cd };
-					break;
-				}
+			Skill skill{};
+			skill.id = bonusStat;
+			QDomElement bonusStatElement = heroBonusStatElement.firstChildElement();
 
-				default:
-					throw std::exception();
-				}
+			for (int i = 0; i < SKILL_NUM; i++) {
+				skill.val[i] = bonusStatElement.text().toFloat();
 
+				bonusStatElement = bonusStatElement.nextSiblingElement();
 			}
 
-			catch (std::out_of_range e)
-			{
-				//TODO : add something
-				throw;
+			if (!bonusStatElement.isNull() && heroBonusStatElement.tagName() == "talent") {
+				skill.talent = bonusStatElement.text().toFloat();
+				skill.flag = talentFlag::off;
 			}
+			
+			hero.skills.push_back(std::move(skill));
+
+
+		}
+
+		for (QDomElement heroTraitElement = heroSkillElement;
+			!heroTraitElement.isNull();
+			heroTraitElement = heroTraitElement.nextSiblingElement())
+		{
+			QDomElement traitElement = heroTraitElement.firstChildElement();
+
+
+			Trait::traitIds id = heroesTraitsDispatchTable.at(traitElement.tagName().toLocal8Bit().constData());
+
+			switch (id)
+			{
+			case Trait::traitIds::crit:
+			{
+				Crit trait{};
+
+				QDomElement critElement = traitElement.firstChildElement();
+				QDomElement critChanceElement = critElement.nextSiblingElement();
+
+				for (int i = 0; i < SKILL_NUM; i++) {
+					trait.crit[i] = critElement.text().toFloat();
+					trait.critChance[i] = critChanceElement.text().toFloat();
+
+					critElement = critElement.nextSiblingElement();
+					critChanceElement = critChanceElement.nextSiblingElement();
+				}
+				if (!critElement.isNull() && critElement.tagName() == "talent")
+				{
+					trait.critTalent = critElement.text().toFloat();
+					trait.critFlag = talentFlag::off;
+				}
+				if (!critChanceElement.isNull() && critChanceElement.tagName() == "talent")
+				{
+					trait.critChanceTalent = critChanceElement.text().toFloat();
+					trait.critChanceFlag = talentFlag::off;
+				}				
+				hero.traits["crit"] = std::make_shared<Crit>(trait);
+				break;
+			}				
+			case Trait::traitIds::cdCrit:
+				break;
+			default:
+				break;
+			}
+
 		}
 
 		heroesData.push_back(std::move(hero));
@@ -222,7 +231,7 @@ void DotaCalculator::initItemData()
 		QDomElement itemStatElement = items.at(i).firstChildElement();
 		DotaItem item;
 
-		item.name = itemStatElement.text().toLocal8Bit().constData();
+		item.name = itemStatElement.text().toStdString();
 		itemStatElement = itemStatElement.nextSiblingElement();
 
 		item.cost = itemStatElement.text().toFloat();
@@ -232,44 +241,44 @@ void DotaCalculator::initItemData()
 		{
 			try
 			{
-				itemBonusStats bonusStat = itemsDispatchTable.at(itemBonusStatElement.tagName().toLocal8Bit().data());
+				DotaItem::ids bonusStat = itemsDispatchTable.at(itemBonusStatElement.tagName().toLocal8Bit().data());
 
 				switch (bonusStat)
 				{
-				case itemBonusStats::strength:
+				case DotaItem::ids::strength:
 					item.strength = itemBonusStatElement.text().toFloat();
 					break;
-				case itemBonusStats::agility:
+				case DotaItem::ids::agility:
 					item.agility = itemBonusStatElement.text().toFloat();
 					break;
-				case itemBonusStats::intellegence:
+				case DotaItem::ids::intellegence:
 					item.intellegence = itemBonusStatElement.text().toFloat();
 					break;
-				case itemBonusStats::greenDamage:
+				case DotaItem::ids::greenDamage:
 					item.greenDamage = itemBonusStatElement.text().toFloat();
 					break;
-				case itemBonusStats::redPhysicalDamage:
+				case DotaItem::ids::redPhysicalDamage:
 					item.redMagickDamage = itemBonusStatElement.text().toFloat();
 					break;
-				case itemBonusStats::redMagickDamage:
+				case DotaItem::ids::redMagickDamage:
 					item.redMagickDamage = itemBonusStatElement.text().toFloat();
 					break;
-				case itemBonusStats::as:
+				case DotaItem::ids::as:
 					item.as = itemBonusStatElement.text().toFloat();
 					break;
-				case itemBonusStats::crit:
+				case DotaItem::ids::crit:
 					item.crit = itemBonusStatElement.text().toFloat();
 					break;
-				case itemBonusStats::critChance:
+				case DotaItem::ids::critChance:
 					item.critChance = itemBonusStatElement.text().toFloat();
 					break;
 
 
-				case itemBonusStats::traitRadiance:
+				case DotaItem::ids::traitRadiance:
 				{
-					QDomElement dpsElement = itemBonusStatElement.firstChildElement();
-					float dps = dpsElement.text().toFloat();
-					item.traits["traitRadiance"] = Radiance{ dps };
+					//QDomElement dpsElement = itemBonusStatElement.firstChildElement();
+					//float dps = dpsElement.text().toFloat();
+					//item.traits["traitRadiance"] = Radiance{ dps };
 					break;
 				}
 
@@ -292,7 +301,14 @@ void DotaCalculator::initItemData()
 
 void DotaCalculator::initHeroSelection()
 {
+	selectHeroLayout = new QHBoxLayout;
+
 	selectHeroLabel = new QLabel("Select Hero:");
+	selectHeroButton = new QPushButton("Tune");
+
+	selectHeroLayout->addWidget(selectHeroLabel);
+	selectHeroLayout->addStretch();
+	selectHeroLayout->addWidget(selectHeroButton);
 
 	selectHeroComboBox = new QComboBox;
 	selectHeroComboBox->addItem("No Hero");
@@ -301,6 +317,13 @@ void DotaCalculator::initHeroSelection()
 	{
 		selectHeroComboBox->addItem(heroesData[i].name.data());
 	}
+}
+
+void DotaCalculator::initHeroDialog()
+{
+	heroDialog = new HeroDialog(this);
+
+	connect(selectHeroButton, &QPushButton::clicked, this, &DotaCalculator::onHeroDialogOpen);
 }
 
 void DotaCalculator::initLevelSelection()
@@ -371,7 +394,8 @@ void DotaCalculator::initMainLayout()
 {
 	mainLayout = new QVBoxLayout;
 
-	mainLayout->addWidget(selectHeroLabel);
+	//mainLayout->addWidget(selectHeroLabel);
+	mainLayout->addLayout(selectHeroLayout);
 	mainLayout->addWidget(selectHeroComboBox);
 
 	mainLayout->addSpacing(10);
@@ -395,7 +419,7 @@ void DotaCalculator::initMainLayout()
 void DotaCalculator::onCalculateClick()
 {
 	//0 index == no item/hero
-	const DotaHero hero = heroesData[selectHeroComboBox->currentIndex()];
+	const DotaHero& hero = heroesData[selectHeroComboBox->currentIndex()];
 
 	if (hero.name.empty()) 
 		return;
@@ -418,5 +442,17 @@ void DotaCalculator::onCalculateClick()
 
 	dpsResultLabel->setNum(result);
 	
+}
+
+void DotaCalculator::onHeroDialogOpen()
+{
+	const DotaHero& hero = heroesData[selectHeroComboBox->currentIndex()];
+
+	if (hero.name.empty())
+		// just return?
+		return;
+
+	heroDialog->onDialogOpen(hero);
+
 }
 

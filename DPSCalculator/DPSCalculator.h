@@ -19,7 +19,7 @@ class DPSCalculator
 {
 public:
 	void load(const DotaHero& hero, unsigned int level, const DotaItem (&items)[MAX_ITEMS]);
-	traitCallback getTraitCallback(const std::string& traitName);
+	//traitCallback getTraitCallback(const std::string& traitName);
 	float calculate();
 
 private:

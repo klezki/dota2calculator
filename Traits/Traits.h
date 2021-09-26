@@ -1,7 +1,34 @@
 #pragma once
 #include "DotaHero/DotaHero.h"
 
-struct CdCrit
+struct Trait : Skill
+{
+	enum class traitIds
+	{
+		crit,
+		cdCrit,
+	};
+
+	traitIds traitId;
+};
+
+struct Crit : Trait
+{
+	talentFlag critFlag = talentFlag::empty;
+	float critTalent;
+	float crit[SKILL_NUM];
+	
+	talentFlag critChanceFlag = talentFlag::empty;
+	float critChanceTalent;
+	float critChance[SKILL_NUM];
+
+	std::pair<float, float> operator()(int level)
+	{
+		return {crit[level], critChance[level]};
+	}
+};
+
+struct CdCrit : Trait
 {
 	float cd;
 
@@ -11,7 +38,7 @@ struct CdCrit
 	}
 };
 
-struct Radiance
+struct Radiance : Trait
 {
 	float dps;
 
