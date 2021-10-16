@@ -7,14 +7,35 @@
 #include <utility>
 #include <memory>
 
-#define SKILL_NUM 4
+//TODO move declarations
+
+#define SKILL_LEVEL_NUM 4
 
 enum class talentFlag
 {
 	empty,
 	on,
-	off
+	off,
+	only,
 };
+
+struct Trait
+{
+	enum class ids
+	{
+		crit,
+		cdCrit,
+		
+		//items
+		radiance,
+	};
+
+	talentFlag flag = talentFlag::empty;
+	ids traitId;
+	int level;
+	std::string name;
+};
+
 
 struct Skill
 {
@@ -27,14 +48,14 @@ struct Skill
 		redPhysicalDamage,
 		redMagickDamage,
 		as,
-		crit,
-		critChance,
 	};
 
 	talentFlag flag = talentFlag::empty;
 	ids id;
-	float val[SKILL_NUM];
-	float talent;
+	int level = 0;
+	float val[SKILL_LEVEL_NUM] = {};
+	float talent = 0.0f;
+	std::string name;
 };
 
 enum class Attribute
@@ -43,6 +64,19 @@ enum class Attribute
 	Agility,
 	Intellegence
 };
+
+struct CritData
+{
+	float mult = 0.0f;
+	float chance = 0.0f;
+
+	constexpr float toCoef() const { return mult * chance; }
+
+};
+
+using skillDataVector = std::vector<std::tuple<int, talentFlag>>;
+using traitDataVector = std::vector<std::tuple<Trait::ids, int, talentFlag>>;
+using traitMap = std::unordered_map<Trait::ids, std::shared_ptr<Trait>>;
 
 struct DotaHero
 {
@@ -53,15 +87,15 @@ struct DotaHero
 	float baseDamage = 0.0f;
 	float bat = 1.7f;
 
-	float strength = 0;
-	float agility = 0;
-	float intellegence = 0;
+	float strength = 0.0f;
+	float agility = 0.0f;
+	float intellegence = 0.0f;
 
-	float as = 0;
+	float as = 0.0f;
 
-	float greenDamage = 0;
-	float redPhysicalDamage = 0;
-	float redMagickDamage = 0;
+	float greenDamage = 0.0f;
+	float redPhysicalDamage = 0.0f;
+	float redMagickDamage = 0.0f;
 
 	float crit = 1.0f;
 	float critChance = 0.0f;
@@ -101,5 +135,5 @@ struct DotaHero
 	}
 
 	std::vector<Skill> skills;
-	std::unordered_map<std::string, std::shared_ptr<Skill>> traits;
+	traitMap traits;
 };

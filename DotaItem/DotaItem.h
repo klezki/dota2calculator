@@ -16,8 +16,6 @@ struct DotaItem
 		as,
 		crit,
 		critChance,
-
-		traitRadiance,
 	};
 
 
@@ -34,5 +32,5 @@ struct DotaItem
 
 	std::string name = "";
 
-	std::unordered_map<std::string, std::shared_ptr<Skill>> traits;
+	traitMap traits;
 };

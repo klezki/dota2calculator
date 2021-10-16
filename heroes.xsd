@@ -2,57 +2,67 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
     <xsd:complexType name="SkillValue">
-        <xsd:sequence>
-            <xsd:element name="lvl1" type="xsd:float"/>
-            <xsd:element name="lvl2" type="xsd:float"/>
-            <xsd:element name="lvl3" type="xsd:float"/>
-            <xsd:element name="lvl4" type="xsd:float"/>
-            <xsd:element name="talent" type="xsd:float" minOccurs = "0"/>
-        </xsd:sequence>
+        <xsd:choice>
+            <xsd:element name="talent" type="xsd:float"/>
+            <xsd:sequence>
+                <xsd:element name="lvl1" type="xsd:float"/>
+                <xsd:element name="lvl2" type="xsd:float"/>
+                <xsd:element name="lvl3" type="xsd:float"/>
+                <xsd:element name="lvl4" type="xsd:float"/>
+                <xsd:element name="talent" type="xsd:float" minOccurs = "0"/>
+            </xsd:sequence>
+        </xsd:choice>
     </xsd:complexType>
 
     <xsd:complexType name="Skill">
-        <xsd:choice>
-            <xsd:element name="greenDamage" type="SkillValue"/>
-            <xsd:element name="redPhysicalDamage" type="SkillValue"/>
-            <xsd:element name="redMagickDamage" type="SkillValue"/>
-            <xsd:element name="as" type="SkillValue"/>
-            <xsd:element name="crit" type="SkillValue"/>
-            <xsd:element name="critChance" type="SkillValue"/>
-        </xsd:choice>
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:choice>
+                <xsd:element name="strength" type="SkillValue"/>
+                <xsd:element name="agility" type="SkillValue"/>
+                <xsd:element name="intellegence" type="SkillValue"/>
+                <xsd:element name="greenDamage" type="SkillValue"/>
+                <xsd:element name="redPhysicalDamage" type="SkillValue"/>
+                <xsd:element name="redMagickDamage" type="SkillValue"/>
+                <xsd:element name="as" type="SkillValue"/>
+            </xsd:choice>
+        </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="Trait">
-        <xsd:choice>
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:choice>
 
-            <xsd:element name="crit" minOccurs = "0">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="crit" type="SkillValue"/>
-                        <xsd:element name="critChance" type="SkillValue"/>
-                        
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            
-            <xsd:element name="hitAS" minOccurs = "0">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="hits" type="xsd:float"/>
-                        <xsd:element name="dur" type="xsd:float"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
+                <xsd:element name="crit" minOccurs = "0">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="crit" type="SkillValue"/>
+                            <xsd:element name="critChance" type="SkillValue"/>                          
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
 
-            <xsd:element name="cdCrit" minOccurs = "0">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="cd" type="xsd:float"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
+                <xsd:element name="cdCrit" minOccurs = "0">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="crit" type="SkillValue"/>
+                            <xsd:element name="cd" type="SkillValue"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
 
-        </xsd:choice>
+                <xsd:element name="hitAS" minOccurs = "0">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="hits" type="xsd:float"/>
+                            <xsd:element name="dur" type="xsd:float"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+
+            </xsd:choice>
+        </xsd:sequence>
     </xsd:complexType>
 
 

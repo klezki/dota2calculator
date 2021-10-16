@@ -17,6 +17,7 @@
         <baseAS>100</baseAS>
 
         <skill>
+            <name>Bloodrage</name>
             <as>
                 <lvl1>60</lvl1>
                 <lvl2>90</lvl2>
@@ -43,6 +44,50 @@
         <baseDamage>27-31</baseDamage>
         <bat>1.7</bat>
         <baseAS>100</baseAS>
+
+    </hero>
+    <hero>
+        <name>Wraith King</name>
+
+        <attribute>strength</attribute>
+
+        <strength>22</strength>
+        <agility>18</agility>
+        <intellegence>18</intellegence>
+
+        <strengthGrowth>3</strengthGrowth>
+        <agilityGrowth>1.7</agilityGrowth>
+        <intellegenceGrowth>1.6</intellegenceGrowth>
+
+        <baseDamage>38-40</baseDamage>
+        <bat>1.7</bat>
+        <baseAS>100</baseAS>
+
+        <skill>
+            <name>Talent lvl 10</name>
+            <as>
+                <talent>15</talent>
+            </as>
+        </skill>
+
+        <trait>
+            <name>Mortal Strike</name>
+            <cdCrit>
+                <crit>
+                    <lvl1>1.5</lvl1>
+                    <lvl2>1.9</lvl2>
+                    <lvl3>2.3</lvl3>
+                    <lvl4>2.7</lvl4>
+                </crit>
+                <cd>
+                    <lvl1>5.5</lvl1>
+                    <lvl2>5</lvl2>
+                    <lvl3>4.5</lvl3>
+                    <lvl4>4</lvl4>
+                    <talent>2</talent>
+                </cd>
+            </cdCrit>
+        </trait>
 
     </hero>
 

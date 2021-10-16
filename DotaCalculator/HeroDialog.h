@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include "DotaHero/DotaHero.h"
 #include <functional>
+#include <tuple>
 
 
 class HeroDialog : public QDialog
@@ -18,24 +19,21 @@ public:
 
 	HeroDialog(QWidget* parent);
 	void onDialogOpen(const DotaHero& hero);
+	void createSkillWidgets(const DotaHero& hero);
+	void createTraitWidgets(const DotaHero& hero);
+	void deleteWidgets();
+	skillDataVector getSkillsData();
+	traitDataVector getTraitsData();
 
 private:
 	void initMainLayout();
 
 	QVBoxLayout* mainLayout;
 
-	QLabel* setArmorLabel;
-	QSpinBox* setArmorSpinBox;
+	std::string heroName;
 
-	QCheckBox* aganimShardCheckBox;
-
-	QCheckBox* aganimScepterCheckBox;
-
-	QCheckBox* moonShardCheckBox;
-
-	QPushButton* okButton;
-
-	const DotaHero* pcurHero;
+	std::vector<std::tuple<QLabel*, QSpinBox*, QCheckBox*>> skillWidgets;
+	std::vector<std::tuple<Trait::ids, QLabel*, QSpinBox*, QCheckBox*>> traitWidgets;
 
 	
 

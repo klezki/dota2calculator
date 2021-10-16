@@ -15,9 +15,11 @@
         <name>Radiance</name>
         <cost>5150</cost>
         <greenDamage>60</greenDamage>
-        <traitRadiance>
-            <dps>60</dps>
-        </traitRadiance>
+        <trait>
+            <radiance>
+                <dps>60</dps>
+            </radiance>
+        </trait>
     </item>
 
 </items>

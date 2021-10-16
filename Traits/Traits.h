@@ -1,49 +1,56 @@
 #pragma once
 #include "DotaHero/DotaHero.h"
 
-struct Trait : Skill
-{
-	enum class traitIds
-	{
-		crit,
-		cdCrit,
-	};
-
-	traitIds traitId;
-};
-
+/**
+ * Crit is trait because crit chance and crit mult
+ * must be unified when creating widgets for HeroDialog
+ */
 struct Crit : Trait
 {
-	talentFlag critFlag = talentFlag::empty;
-	float critTalent;
-	float crit[SKILL_NUM];
-	
-	talentFlag critChanceFlag = talentFlag::empty;
-	float critChanceTalent;
-	float critChance[SKILL_NUM];
+	//assuming talent bufs only crit or only chance
+	float critTalent = 0.0f;
+	float critChanceTalent = 0.0f;
+	float crit[SKILL_LEVEL_NUM] = {};
+	float critChance[SKILL_LEVEL_NUM] = {};
 
-	std::pair<float, float> operator()(int level)
+	CritData operator()() const
 	{
-		return {crit[level], critChance[level]};
+		if (flag == talentFlag::on)
+		{
+			return { crit[level] + critTalent, critChance[level] + critChanceTalent };
+		}
+		else
+		{
+			return { crit[level], critChance[level] };
+		}		
 	}
 };
+
 
 struct CdCrit : Trait
 {
-	float cd;
+	float cdTalent = 0.0f;
+	float crit[SKILL_LEVEL_NUM] = {};
+	float cd[SKILL_LEVEL_NUM] = {};
 
-	float operator()(const DotaHero& hero)
+	CritData operator()(const DotaHero& hero) const
 	{
-		return 1 / (cd * hero.aps());
+		if (flag == talentFlag::on)
+		{
+			float chance = 1 / (cd[level] - cdTalent) * hero.aps();
+			return { crit[level], chance };
+		}
+		else
+		{
+			float chance = 1 / cd[level] * hero.aps();
+			return { crit[level], chance };
+		}
 	}
 };
 
+/********ITEMS**********/
+
 struct Radiance : Trait
 {
-	float dps;
-
-	float operator()(const DotaHero& hero)
-	{
-		return dps;
-	}
+	float dps = 0.0f;
 };

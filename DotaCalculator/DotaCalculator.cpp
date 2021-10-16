@@ -1,7 +1,5 @@
 #include <DotaCalculator/DotaCalculator.h>
 
-
-
 namespace
 {
 	const std::unordered_map<std::string, Skill::ids> heroesDispatchTable = {
@@ -12,13 +10,11 @@ namespace
 		{ "redPhysicalDamage",  Skill::ids::redPhysicalDamage},
 		{ "redMagickDamage",  Skill::ids::redMagickDamage},
 		{ "as",  Skill::ids::as},
-		{ "crit",  Skill::ids::crit},
-		{ "critChance",  Skill::ids::critChance},
 	};
 
-	const std::unordered_map<std::string, Trait::traitIds> heroesTraitsDispatchTable = {
-		{ "cdCrit",  Trait::traitIds::cdCrit},
-		{ "crit",  Trait::traitIds::crit},
+	const std::unordered_map<std::string, Trait::ids> heroesTraitsDispatchTable = {
+		{ "cdCrit",  Trait::ids::cdCrit},
+		{ "crit",  Trait::ids::crit},
 	};
 
 	const std::unordered_map<std::string, DotaItem::ids> itemsDispatchTable = {
@@ -31,8 +27,10 @@ namespace
 		{ "as",  DotaItem::ids::as},
 		{ "crit",  DotaItem::ids::crit},
 		{ "critChance",  DotaItem::ids::critChance},
+	};
 
-		{ "traitRadiance",  DotaItem::ids::traitRadiance},
+	const std::unordered_map<std::string, Trait::ids> itemsTraitsDispatchTable = {
+		{ "radiance",  Trait::ids::radiance},
 	};
 
 	float parseDamageRange(const QString& damageRange)
@@ -141,28 +139,38 @@ void DotaCalculator::initHeroData()
 			!heroSkillElement.isNull() && heroSkillElement.tagName() != "trait";
 			heroSkillElement = heroSkillElement.nextSiblingElement() )
 		{
-			QDomElement heroBonusStatElement = heroSkillElement.firstChildElement();
-
-			Skill::ids bonusStat = heroesDispatchTable.at(heroBonusStatElement.tagName().toStdString());
-
 			Skill skill{};
+			QDomElement skillElement = heroSkillElement.firstChildElement();
+			skill.name = skillElement.text().toStdString();
+			skillElement = skillElement.nextSiblingElement();
+
+			Skill::ids bonusStat = heroesDispatchTable.at(skillElement.tagName().toStdString());
+
 			skill.id = bonusStat;
-			QDomElement bonusStatElement = heroBonusStatElement.firstChildElement();
+			
+			skillElement = skillElement.firstChildElement();
 
-			for (int i = 0; i < SKILL_NUM; i++) {
-				skill.val[i] = bonusStatElement.text().toFloat();
+			if (skillElement.tagName() != "talent")
+			{
+				for (int i = 0; i < SKILL_LEVEL_NUM; i++)
+				{
+					skill.val[i] = skillElement.text().toFloat();
+					skillElement = skillElement.nextSiblingElement();
+				}
 
-				bonusStatElement = bonusStatElement.nextSiblingElement();
+				if (!skillElement.isNull())
+				{
+					skill.talent = skillElement.text().toFloat();
+					skill.flag = talentFlag::off;
+				}
 			}
-
-			if (!bonusStatElement.isNull() && bonusStatElement.tagName() == "talent") {
-				skill.talent = bonusStatElement.text().toFloat();
-				skill.flag = talentFlag::off;
+			else
+			{
+				skill.talent = skillElement.text().toFloat();
+				skill.flag = talentFlag::only;
 			}
 			
 			hero.skills.push_back(std::move(skill));
-
-
 		}
 
 		for (QDomElement heroTraitElement = heroSkillElement;
@@ -170,20 +178,22 @@ void DotaCalculator::initHeroData()
 			heroTraitElement = heroTraitElement.nextSiblingElement())
 		{
 			QDomElement traitElement = heroTraitElement.firstChildElement();
+			std::string name = traitElement.text().toStdString();
+			traitElement = traitElement.nextSiblingElement();
 
-
-			Trait::traitIds id = heroesTraitsDispatchTable.at(traitElement.tagName().toStdString());
+			Trait::ids id = heroesTraitsDispatchTable.at(traitElement.tagName().toStdString());
 
 			switch (id)
 			{
-			case Trait::traitIds::crit:
+			case Trait::ids::crit:
 			{
 				Crit trait{};
+				trait.name = std::move(name);
 
 				QDomElement critElement = traitElement.firstChildElement();
 				QDomElement critChanceElement = critElement.nextSiblingElement();
 
-				for (int i = 0; i < SKILL_NUM; i++) {
+				for (int i = 0; i < SKILL_LEVEL_NUM; i++) {
 					trait.crit[i] = critElement.text().toFloat();
 					trait.critChance[i] = critChanceElement.text().toFloat();
 
@@ -193,19 +203,53 @@ void DotaCalculator::initHeroData()
 				if (!critElement.isNull() && critElement.tagName() == "talent")
 				{
 					trait.critTalent = critElement.text().toFloat();
-					trait.critFlag = talentFlag::off;
+					trait.flag = talentFlag::off;
 				}
 				if (!critChanceElement.isNull() && critChanceElement.tagName() == "talent")
 				{
 					trait.critChanceTalent = critChanceElement.text().toFloat();
-					trait.critChanceFlag = talentFlag::off;
+					assert(trait.flag == talentFlag::empty); //TODO pls remove
+					trait.flag = talentFlag::off;
 				}				
-				hero.traits["crit"] = std::make_shared<Crit>(trait);
+				hero.traits[id] = std::make_shared<Crit>(trait);
 				break;
 			}				
-			case Trait::traitIds::cdCrit:
+			case Trait::ids::cdCrit:
+			{
+				CdCrit trait{};
+				trait.name = std::move(name);
+
+				QDomElement critElement = traitElement.firstChildElement();
+				QDomElement cdElement = critElement.nextSiblingElement();
+
+				critElement = critElement.firstChildElement();
+				cdElement = cdElement.firstChildElement();
+
+				for (int i = 0; i < SKILL_LEVEL_NUM; i++) {
+					trait.crit[i] = critElement.text().toFloat();
+					trait.cd[i] = cdElement.text().toFloat();
+
+					critElement = critElement.nextSiblingElement();
+					cdElement = cdElement.nextSiblingElement();
+				}
+
+				/*if (!critElement.isNull() && critElement.tagName() == "talent")
+				{
+					trait.critTalent = critElement.text().toFloat();
+					trait.flag = talentFlag::off;
+				}*/
+
+				//TODO remove assert?
+				assert(cdElement.tagName() == "talent");
+
+				trait.cdTalent = cdElement.text().toFloat();
+				trait.flag = talentFlag::off;
+
+				hero.traits[id] = std::make_shared<CdCrit>(trait);
 				break;
+			}
 			default:
+				throw std::exception();
 				break;
 			}
 
@@ -234,65 +278,79 @@ void DotaCalculator::initItemData()
 		item.cost = itemStatElement.text().toFloat();
 		itemStatElement = itemStatElement.nextSiblingElement();
 
-		for (QDomElement itemBonusStatElement = itemStatElement; !itemBonusStatElement.isNull(); itemBonusStatElement = itemBonusStatElement.nextSiblingElement())
+		QDomElement itemBonusStatElement = itemStatElement;
+
+		for ( ; 
+			!itemBonusStatElement.isNull() && itemBonusStatElement.tagName() != "trait";
+			itemBonusStatElement = itemBonusStatElement.nextSiblingElement())
 		{
-			try
+			DotaItem::ids bonusStat = itemsDispatchTable.at(itemBonusStatElement.tagName().toStdString());
+
+			switch (bonusStat)
 			{
-				DotaItem::ids bonusStat = itemsDispatchTable.at(itemBonusStatElement.tagName().toStdString());
+			case DotaItem::ids::strength:
+				item.strength = itemBonusStatElement.text().toFloat();
+				break;
+			case DotaItem::ids::agility:
+				item.agility = itemBonusStatElement.text().toFloat();
+				break;
+			case DotaItem::ids::intellegence:
+				item.intellegence = itemBonusStatElement.text().toFloat();
+				break;
+			case DotaItem::ids::greenDamage:
+				item.greenDamage = itemBonusStatElement.text().toFloat();
+				break;
+			case DotaItem::ids::redPhysicalDamage:
+				item.redMagickDamage = itemBonusStatElement.text().toFloat();
+				break;
+			case DotaItem::ids::redMagickDamage:
+				item.redMagickDamage = itemBonusStatElement.text().toFloat();
+				break;
+			case DotaItem::ids::as:
+				item.as = itemBonusStatElement.text().toFloat();
+				break;
+			case DotaItem::ids::crit:
+				item.crit = itemBonusStatElement.text().toFloat();
+				break;
+			case DotaItem::ids::critChance:
+				item.critChance = itemBonusStatElement.text().toFloat();
+				break;
 
-				switch (bonusStat)
-				{
-				case DotaItem::ids::strength:
-					item.strength = itemBonusStatElement.text().toFloat();
-					break;
-				case DotaItem::ids::agility:
-					item.agility = itemBonusStatElement.text().toFloat();
-					break;
-				case DotaItem::ids::intellegence:
-					item.intellegence = itemBonusStatElement.text().toFloat();
-					break;
-				case DotaItem::ids::greenDamage:
-					item.greenDamage = itemBonusStatElement.text().toFloat();
-					break;
-				case DotaItem::ids::redPhysicalDamage:
-					item.redMagickDamage = itemBonusStatElement.text().toFloat();
-					break;
-				case DotaItem::ids::redMagickDamage:
-					item.redMagickDamage = itemBonusStatElement.text().toFloat();
-					break;
-				case DotaItem::ids::as:
-					item.as = itemBonusStatElement.text().toFloat();
-					break;
-				case DotaItem::ids::crit:
-					item.crit = itemBonusStatElement.text().toFloat();
-					break;
-				case DotaItem::ids::critChance:
-					item.critChance = itemBonusStatElement.text().toFloat();
-					break;
-
-
-				case DotaItem::ids::traitRadiance:
-				{
-					//QDomElement dpsElement = itemBonusStatElement.firstChildElement();
-					//float dps = dpsElement.text().toFloat();
-					//item.traits["traitRadiance"] = Radiance{ dps };
-					break;
-				}
-
-				default:
-					throw std::exception();
-				}
-
+			default:
+				throw std::exception();
 			}
 
-			catch (std::out_of_range e)
-			{
-				//TODO : add something
-				throw;
-			}
+
 		}
 
-		itemsData.push_back(std::move(item));
+		for (QDomElement itemTraitElement = itemBonusStatElement;
+			!itemTraitElement.isNull();
+			itemTraitElement = itemTraitElement.nextSiblingElement())
+		{
+			QDomElement traitElement = itemTraitElement.firstChildElement();
+
+
+			Trait::ids id = itemsTraitsDispatchTable.at(traitElement.tagName().toStdString());
+
+			switch (id)
+			{
+			case Trait::ids::radiance:
+			{
+				Radiance trait{};
+				QDomElement dpsElement = traitElement.firstChildElement();
+				float dps = dpsElement.text().toFloat();
+				trait.dps = dps;
+				item.traits[id] = std::make_shared<Radiance>(trait);
+				break;
+			}
+
+			default:
+				throw std::exception();
+				break;
+			}
+
+			itemsData.push_back(std::move(item));
+		}
 	}
 }
 
@@ -391,7 +449,6 @@ void DotaCalculator::initMainLayout()
 {
 	mainLayout = new QVBoxLayout;
 
-	//mainLayout->addWidget(selectHeroLabel);
 	mainLayout->addLayout(selectHeroLayout);
 	mainLayout->addWidget(selectHeroComboBox);
 
@@ -433,7 +490,7 @@ void DotaCalculator::onCalculateClick()
 
 	int level = selectLevelSpinBox->value();
 
-	calculator.load(hero, level, items);
+	calculator.load(hero, level, items, heroDialog->getSkillsData(), heroDialog->getTraitsData());
 
 	float result = calculator.calculate();
 

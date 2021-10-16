@@ -48,7 +48,7 @@ private:
 	void initMainLayout();
 
 	QVBoxLayout* mainLayout;
-	
+
 	QHBoxLayout* selectHeroLayout;
 	QLabel* selectHeroLabel;
 	QPushButton* selectHeroButton;
@@ -80,4 +80,5 @@ private:
 	std::vector<DotaItem> itemsData;
 
 	DPSCalculator calculator;
+
 };
