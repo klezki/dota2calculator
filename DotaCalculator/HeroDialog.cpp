@@ -11,7 +11,6 @@ HeroDialog::HeroDialog(QWidget* parent)
 	resize(200, 300);
 }
 
-
 void HeroDialog::initMainLayout()
 {
 	mainLayout = new QVBoxLayout;
@@ -27,6 +26,7 @@ void HeroDialog::onDialogOpen(const DotaHero& hero)
 
 		createSkillWidgets(hero);
 		createTraitWidgets(hero);
+		heroName = hero.name;
 	}
 	open();
 }
